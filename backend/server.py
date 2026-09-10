@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 from pydantic import BaseModel, Field
 from routers.analysis import router as analysis_router
+from routers.weather import router as weather_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -38,6 +39,7 @@ async def root():
 
 
 api_router.include_router(analysis_router)
+api_router.include_router(weather_router)
 
 # Include the router in the main app
 app.add_middleware(

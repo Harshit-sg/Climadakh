@@ -1,0 +1,93 @@
+{
+  "passed": 12,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [],
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "The Thermal Atlas dashboard still loads with Ladakh branding and the simulation controls",
+      "name": "thermal-dashboard-loads",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "THERMAL ATLAS, Ladakh subtitle, simulation controls, climate location control, and empty results state were visible."
+    },
+    {
+      "criterion": "Live weather readings are visible or degrade gracefully",
+      "name": "weather-live-readings-visible",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Weather panel showed a valid live/offline/syncing status; live state exposed current temperature/source, and refresh control was visible."
+    },
+    {
+      "criterion": "A user can import measured weather CSV data",
+      "name": "weather-csv-imports",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Uploaded a CSV using datetime, temp, and solar_irradiance aliases; weather source changed to Uploaded measured CSV and readings remained visible."
+    },
+    {
+      "criterion": "Imported weather can be applied to the thermal model",
+      "name": "weather-import-applies-to-model",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Imported measured readings changed the ambient model range, Use readings in model applied them, and analysis produced the normal metric card."
+    },
+    {
+      "criterion": "A user can download a historical climate sample CSV",
+      "name": "weather-sample-csv-downloads",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Historical sample action completed a browser download with a weather-sample.csv filename."
+    },
+    {
+      "criterion": "ANSYS handoff exports produce real files",
+      "name": "ansys-handoff-exports-download",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "After analysis, CSV export downloaded a thermal-series.csv file and JSON export downloaded an ansys-parameters.json file."
+    },
+    {
+      "criterion": "The existing analysis and saved-run flow remains functional",
+      "name": "thermal-analysis-completes",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Run analysis revealed metrics, temperature chart, heat-flow card, scenario comparison, and recommendation."
+    },
+    {
+      "criterion": "The existing analysis and saved-run flow remains functional",
+      "name": "thermal-saved-run-revisited",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Saved a unique tscheck run, found it in recent runs, revisited it, and restored metrics/chart and saved name."
+    },
+    {
+      "criterion": "Weather API validation and fallback routes work through the public contract",
+      "name": "test_tscheck_weather_contract.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "HTTP GET /api/weather/live and /api/weather/sample returned 200 structured data; POST /api/weather/import returned 200 for aliases and 422 for non-CSV/malformed input."
+    },
+    {
+      "criterion": "Running analysis populates the thermal API response and rejects invalid payloads",
+      "name": "test_tscheck_thermal_analysis.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "HTTP POST /api/analyze returned 200 with chart points, heat flows, scenarios, and recommendation; invalid dimensions returned 422."
+    },
+    {
+      "criterion": "A completed analysis can be persisted and listed by the API",
+      "name": "test_tscheck_saved_analysis.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "HTTP POST /api/analyses and GET /api/analyses returned 200 and the unique tscheck fixture was listed; empty name returned 422."
+    },
+    {
+      "criterion": "Backend public analysis contract remains healthy",
+      "name": "test_tscheck_api_contract.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "Contract suite passed analyze/save/list requests and rejected duration_hours=2 with 422."
+    }
+  ]
+}

@@ -17,4 +17,6 @@ Thermal Atlas is a self-contained engineering dashboard for comparing passive sh
 No authentication; this is a single-user research/demo workspace.
 
 ## Integrations
-No live external weather integration. The default area profiles are seeded in the frontend and the simulation is calculated by the FastAPI model endpoint.
+- Optional live and historical weather use Open-Meteo's public forecast/archive endpoints (no API key in the non-commercial public tier), with graceful UI fallback when unavailable.
+- CSV import accepts measured rows with `timestamp`/`datetime`/`time`, `temperature`/`temp`, and optional `solar_radiation`/`solar_irradiance` columns.
+- ANSYS handoff exports the current analysis as a thermal time-series CSV and a JSON parameter package; these are browser downloads and do not require an external service.
