@@ -1,0 +1,65 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [],
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "The Thermal Atlas dashboard loads with Ladakh branding, animated mountain backdrop, and a visible simulation controls panel",
+      "name": "thermal-dashboard-loads",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "THERMAL ATLAS and Ladakh subtitle, simulation-controls-panel, climate-location-select, and empty-results-state were visible."
+    },
+    {
+      "criterion": "A user can select a Ladakh area preset and edit shelter inputs",
+      "name": "thermal-controls-edit",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Selected Pangong and observed -19°C night → 3°C day; changed dimensions, opening, orientation, wall/roof materials, thermal mass, and duration with updated control values."
+    },
+    {
+      "criterion": "Running the thermal analysis completes the main user journey",
+      "name": "thermal-analysis-completes",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Run thermal analysis revealed metric-card-inside-now, temperature-chart-card, heat-flow-card, scenario-comparison-card, and recommendation-card."
+    },
+    {
+      "criterion": "The analysis outputs are internally populated and readable",
+      "name": "thermal-analysis-outputs-readable",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "All four metric values, inside/ambient legends, four heat-flow rows, 3 cases, recommendation title, and recommendation detail were non-empty/visible."
+    },
+    {
+      "criterion": "A completed analysis can be saved and revisited",
+      "name": "thermal-saved-run-revisited",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Saved a unique tscheck-browser run, observed it in recent runs, clicked it, and restored metrics/chart plus the saved name."
+    },
+    {
+      "criterion": "Running analysis populates the thermal API response and rejects invalid payloads",
+      "name": "test_tscheck_thermal_analysis.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "HTTP POST /api/analyze returned 200 with 24 chart points, heat flows, scenarios, and recommendation; invalid dimensions returned 422."
+    },
+    {
+      "criterion": "A completed analysis can be persisted and listed by the API",
+      "name": "test_tscheck_saved_analysis.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "HTTP POST /api/analyses returned 200 for a unique tscheck fixture; GET /api/analyses returned 200 and contained the returned id; empty name returned 422."
+    },
+    {
+      "criterion": "Backend validation and API-backed data flows work through the public preview contract",
+      "name": "test_tscheck_api_contract.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "HTTP analyze, save, and list requests all returned 200; duration_hours=2 returned 422. Pytest suite: 6 passed."
+    }
+  ]
+}

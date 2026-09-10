@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource/ibm-plex-sans";
+@import "@fontsource/ibm-plex-mono";
+@import "@fontsource-variable/space-grotesk";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: "Space Grotesk Variable", sans-serif;
+  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --color-background: #05070a;
+  --color-foreground: #f8fafc;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-input: rgba(255, 255, 255, 0.14);
+  --color-ring: #f97316;
+  --color-primary: #f97316;
+  --color-primary-foreground: #fff7ed;
+  --color-secondary: #0ea5e9;
+  --color-secondary-foreground: #e0f2fe;
+  --color-muted: #111827;
+  --color-muted-foreground: #94a3b8;
+  --color-card: #0d1117;
+  --color-card-foreground: #f8fafc;
+  --color-popover: #101720;
+  --color-popover-foreground: #f8fafc;
+  --color-destructive: #ef4444;
+  --radius-lg: 1rem;
+}
+
+:root { color-scheme: dark; }
+
+@layer base {
+  * { @apply border-border outline-ring/30; }
+  html { @apply font-sans; background: #05070a; }
+  body { @apply bg-background text-foreground; margin: 0; min-width: 320px; }
+  button, select, input { font: inherit; }
+  ::selection { background: rgba(249, 115, 22, .35); color: #fff7ed; }
+}
+
+.font-heading { font-family: "Space Grotesk Variable", sans-serif; }
+.font-mono { font-family: "IBM Plex Mono", monospace; }
+
+.control-input, .control-select {
+  width: 100%;
+  height: 38px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: .65rem;
+  background: rgba(255,255,255,.045);
+  color: #e2e8f0;
+  padding: 0 .7rem;
+  font-size: .75rem;
+  outline: none;
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+.control-select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #64748b 50%), linear-gradient(135deg, #64748b 50%, transparent 50%); background-position: calc(100% - 14px) 16px, calc(100% - 10px) 16px; background-size: 4px 4px, 4px 4px; background-repeat: no-repeat; padding-right: 2rem; }
+.control-input:focus, .control-select:focus { border-color: rgba(249,115,22,.65); background-color: rgba(249,115,22,.06); box-shadow: 0 0 0 3px rgba(249,115,22,.1); }
+.control-select option { background: #101720; color: #e2e8f0; }
+.control-range { accent-color: #f97316; width: 100%; height: 5px; cursor: pointer; }
+.mass-button { border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.035); border-radius: .55rem; color: #64748b; padding: .55rem .3rem; font-size: .68rem; text-transform: capitalize; transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, transform 180ms ease; }
+.mass-button:hover { transform: translateY(-1px); border-color: rgba(249,115,22,.35); color: #cbd5e1; }
+.mass-button-active { background: rgba(249,115,22,.13); border-color: rgba(249,115,22,.45); color: #fdba74; }
+
+.snow-field { background-image: radial-gradient(circle, rgba(224,242,254,.7) 0 1px, transparent 1.5px), radial-gradient(circle, rgba(255,255,255,.35) 0 1px, transparent 1.5px); background-size: 110px 130px, 170px 190px; animation: snowfall 25s linear infinite; mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent); }
+@keyframes snowfall { from { background-position: 0 -140px, 40px -220px; } to { background-position: 50px 700px, -20px 620px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}

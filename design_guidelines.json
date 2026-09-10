@@ -1,0 +1,98 @@
+{
+  "project": "Thermal Comfort Shelter Simulation (Ladakh)",
+  "theme": "dark",
+  "typography": {
+    "heading_font": "Chivo",
+    "body_font": "IBM Plex Sans",
+    "mono_font": "IBM Plex Mono",
+    "instructions": "Use Chivo for all headings with tracking-tight. Use IBM Plex Sans for body text and UI elements. Use IBM Plex Mono for numerical data and metrics to give a precise engineering feel.",
+    "font_install_command": "Include Google Fonts link for Chivo, IBM Plex Sans, and IBM Plex Mono."
+  },
+  "colors": {
+    "background": "#05070A",
+    "surface": "rgba(13, 17, 23, 0.75)",
+    "primary": "#F97316",
+    "secondary": "#0EA5E9",
+    "accent": "#EF4444",
+    "text_primary": "#F8FAFC",
+    "text_secondary": "#94A3B8",
+    "border": "rgba(255, 255, 255, 0.1)",
+    "instructions": "Adopt the 'Performance Pro / Swiss High-Contrast' hybrid archetype. Use deep obsidian/slate for the background to represent cold/high-altitude. Primary is solar orange (heat/solar energy), secondary is ice blue (ambient temperature). Accent is thermal red (heat loss warnings). Never use pure white or pure black; tint greys with cool blue."
+  },
+  "visual_enhancers": {
+    "surface_strategy": "Glassmorphism (The 'Crystal' Variant) adapted for dark mode. High opacity for readability (bg-black/60 or bg-[#0A0A0A]/70) with backdrop-blur-xl and a delicate 1px border-white/10. Do not use fully transparent backgrounds. This allows the mountain background to provide context without compromising dashboard legibility.",
+    "shadows": "Ambient diffuse shadows for floating elements.",
+    "icons": "Use Phosphor Icons (@phosphor-icons/react) for precise, technical iconography."
+  },
+  "motion": {
+    "background_animation": "To fulfill 'highly animated with ladakh mounts', use an absolute positioned background layer featuring the Ladakh mountain image. Apply Framer Motion for a slow, continuous scale and pan (Ken Burns effect). Overlay this with 'react-tsparticles' simulating a gentle snowfall or floating solar particles to create an immersive, dynamic environment.",
+    "ui_animation": "Staggered entrance animations for dashboard widgets using Framer Motion. Smooth state transitions on hover (e.g., -translate-y-1, shadow glow)."
+  },
+  "grids_and_layouts": {
+    "dashboard_layout": "High Density Grid (Mode B). grid-cols-1 md:grid-cols-3 lg:grid-cols-4. gap-4 or gap-6. Every pixel must be utilized with logical flow.",
+    "spacing_philosophy": "Generous spacing within cards (p-6). Data-dense but clean. Follow optical alignment."
+  },
+  "components": [
+    {
+      "name": "Simulation Controls Panel",
+      "description": "Sidebar or top section for user-defined shelter dimensions, orientation, openings, materials, thermal mass, and simulation duration. Use Shadcn forms, Select, and Sliders.",
+      "style": "Glassmorphism panel with crisp borders."
+    },
+    {
+      "name": "Thermal vs Ambient Chart",
+      "description": "Main area line chart (Recharts) showing inside temperature vs ambient temperature over time.",
+      "style": "Grid area span 2 or 3. Dark background with vibrant orange (inside) and icy blue (ambient) lines."
+    },
+    {
+      "name": "Heat Flow Analysis",
+      "description": "Bar or Radar chart showing heat flow/losses by envelope and openings.",
+      "style": "Use Recharts. Minimal grid lines, tooltips with IBM Plex Mono."
+    },
+    {
+      "name": "Efficiency Recommendation Engine",
+      "description": "A dedicated card highlighting the most thermally efficient scenario (Material combination).",
+      "style": "Highlight with a subtle Tracing Beam or animated glowing border to draw attention."
+    }
+  ],
+  "accessibility": {
+    "contrast": "Ensure data visualizations use color-blind-friendly palettes (e.g., distinct orange and blue). Normal text minimum 4.5:1 ratio against backgrounds.",
+    "testing_attributes": "All interactive elements MUST include data-testid."
+  },
+  "image_urls": {
+    "background_mountains": {
+      "url": "https://images.unsplash.com/photo-1620473488753-f74e93e4e22f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxsYWRha2glMjBtb3VudGFpbnMlMjBzbm93fGVufDB8fHx8MTc4OTA4MjUwOXww&ixlib=rb-4.1.0&q=85",
+      "description": "Snow covered mountain under blue sky during daytime. Use this as the base layer for the animated background, styled with dark overlays (e.g., bg-black/80) to maintain high contrast for the UI.",
+      "category": "background"
+    },
+    "architecture_reference": {
+      "url": "https://images.unsplash.com/photo-1785741393083-388ec98cdfdf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBzdXN0YWluYWJsZSUyMGFyY2hpdGVjdHVyZSUyMHN1bmxpZ2h0fGVufDB8fHx8MTc4OTA4MjUwOXww&ixlib=rb-4.1.0&q=85",
+      "description": "Contemporary sustainable building. Use for material scenario thumbnails or recommendation cards.",
+      "category": "thumbnails"
+    }
+  },
+  "libraries_and_tools": {
+    "charts": "recharts",
+    "animation": "framer-motion, react-tsparticles, tsparticles",
+    "icons": "@phosphor-icons/react",
+    "ui_components": "shadcn/ui (remember to use .js / .jsx, not .tsx)"
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur) for widgets over the animated mountain background.",
+    "You MUST NOT apply universal transition. Eg: transition: all. Always add transitions for specific interactive elements like button, input excluding transforms.",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style.",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories = main agent will use placeholder text which is FORBIDDEN.",
+    "Prioritize using pre-existing components from src/components/ui when applicable.",
+    "Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.js",
+    "Provide design guidelines for .js files, NOT .tsx files. Ensure Shadcn installations and component setups are tailored for plain JavaScript.",
+    "CRITICAL: DO NOT use complete transparent background in header, overlays, any surface that has content under it. Example: Dropdown with transparent background."
+  ]
+}
