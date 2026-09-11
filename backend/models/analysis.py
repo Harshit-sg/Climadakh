@@ -3,6 +3,7 @@ from typing import Literal
 import uuid
 
 from pydantic import BaseModel, Field
+from models.thermal import PhysicsInputs, EnergyBalancePoint, TemperatureRangePoint, ModelInfo
 
 
 class ShelterDimensions(BaseModel):
@@ -24,6 +25,7 @@ class AnalysisRequest(BaseModel):
     roof_material: str
     thermal_mass: Literal["low", "medium", "high"]
     duration_hours: int = Field(ge=6, le=168)
+    physics: PhysicsInputs | None = None
 
 
 class ChartPoint(BaseModel):
@@ -50,6 +52,9 @@ class ScenarioResult(BaseModel):
     comfort_hours: float
     score: int
     note: str
+    wall_u_value: float | None = None
+    roof_u_value: float | None = None
+    discomfort_degree_hours: float | None = None
 
 
 class AnalysisResult(BaseModel):
@@ -68,6 +73,9 @@ class AnalysisResult(BaseModel):
     scenarios: list[ScenarioResult]
     recommendation: str
     recommendation_detail: str
+    model_info: ModelInfo | None = None
+    energy_balance: list[EnergyBalancePoint] = Field(default_factory=list)
+    sensitivity: list[TemperatureRangePoint] = Field(default_factory=list)
 
 
 class SavedAnalysisCreate(BaseModel):

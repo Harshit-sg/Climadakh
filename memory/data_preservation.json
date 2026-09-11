@@ -1,0 +1,6 @@
+{
+  "purpose": "Read-only baseline before thermal solver v2; verify these records remain byte-equivalent after canonical JSON serialization without Mongo _id.",
+  "sha256": "6058b8a782807a8b6b6e17fd1a09c7ccaef69411e12e5a03ef67c3d8f5b422b7",
+  "count": 14,
+  "ids": ["18e84c45-a055-4bba-83c1-bcc920d2bf56", "2b1791b3-8dde-4870-84ce-1aab53da1c7a", "4931b161-8cd1-4276-8b7d-3fc7dea8fc55", "4d812240-a947-4ff6-82b4-68bff310e265", "6c45c7f8-54a0-4524-a5ca-adb2148376a9", "745133a2-ce52-4627-b94d-fa136687af76", "c1ee311a-64cf-4bfd-9926-439abb9c3065", "c4bc819d-7e6e-4eaa-87ee-527aa68b1f75", "c6e8ff09-778e-4873-bb4f-22a55187c04b", "ddccedd7-6d2b-4299-9684-297a08327c56", "df322ac2-9e7b-4d46-9073-2b6e963bc40b", "e4e7120a-919f-4b42-8915-564885ae1162", "e7843c25-212e-4f64-84df-63dd336ac54b", "ed410e9a-f162-4ab4-b584-ba9095704b03"]
+}

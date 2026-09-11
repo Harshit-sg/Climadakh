@@ -77,21 +77,4 @@ export function SolarSection({ inputs, onChange, onNext, children }: DesignProps
   </div>;
 }
 
-const MATERIALS = [
-  ["rammed-earth", "Rammed earth", "Dense earth construction with substantial thermal storage."],
-  ["stone-mud", "Stone + mud mortar", "Traditional masonry; insulation remains an important consideration."],
-  ["insulated-panel", "Insulated composite", "A lightweight insulated assembly for limiting heat transfer."],
-  ["adobe", "Adobe block", "Earthen blocks with thermal mass for day-to-night buffering."],
-  ["straw-clay", "Straw-clay composite", "Plant fibre and clay combine insulation and some heat storage."],
-] as const;
-
-export function MaterialsSection({ inputs, onChange, onNext }: DesignProps) {
-  return <div className="grid items-start gap-6 xl:grid-cols-[minmax(320px,.75fr)_minmax(0,1.25fr)]" data-testid="materials-section">
-    <Card className="workspace-card" data-testid="materials-input-card"><CardHeader><CardTitle className="flex items-center gap-2 font-heading text-xl" data-testid="materials-input-title"><Layers3 size={19} className="text-orange-300" /> Build the envelope</CardTitle><CardDescription data-testid="materials-input-description">Choose the wall, roof, and heat-storage strategy.</CardDescription></CardHeader><CardContent className="space-y-6">
-      {([['wall_material', 'Wall material', 'wall-material-select'], ['roof_material', 'Roof assembly', 'roof-material-select']] as const).map(([key, label, id]) => <div key={key}><Label htmlFor={id} className="mb-3 text-xs text-slate-300" data-testid={`${id}-label`}>{label}</Label><select id={id} value={inputs[key]} onChange={event => onChange(key, event.target.value)} className="control-select" data-testid={id}>{MATERIALS.map(([value, name]) => <option key={value} value={value}>{name}</option>)}</select></div>)}
-      <div className="border-t border-white/10 pt-5"><p className="mb-3 text-xs text-slate-300" data-testid="thermal-mass-label">Thermal mass / storage</p><div className="grid grid-cols-3 gap-2">{(["low", "medium", "high"] as const).map(mass => <button key={mass} type="button" aria-pressed={inputs.thermal_mass === mass} onClick={() => onChange("thermal_mass", mass)} className={`mass-button py-3 ${inputs.thermal_mass === mass ? "mass-button-active" : ""}`} data-testid={`thermal-mass-${mass}-button`}>{mass}</button>)}</div><p className="mt-3 text-xs leading-6 text-slate-400" data-testid="thermal-mass-description">Higher thermal mass slows temperature changes; it does not replace insulation.</p></div>
-      <Button onClick={onNext} className="h-11 w-full bg-orange-500 text-white hover:bg-orange-400" data-testid="materials-next-button">Next: Analysis <ArrowRight size={15} /></Button>
-    </CardContent></Card>
-    <Card className="workspace-card" data-testid="material-guide-card"><CardHeader><CardDescription className="font-mono text-[10px] uppercase tracking-[.16em]" data-testid="material-guide-eyebrow">Material field notes</CardDescription><CardTitle className="font-heading text-xl" data-testid="material-guide-title">Different layers. Different roles.</CardTitle></CardHeader><CardContent><div className="divide-y divide-white/10">{MATERIALS.map(([id, name, description]) => <div key={id} className="flex flex-col justify-between gap-3 py-4 first:pt-0 sm:flex-row sm:items-center" data-testid={`material-guide-${id}`}><div><p className="text-sm text-slate-200" data-testid={`material-name-${id}`}>{name}</p><p className="mt-1 text-xs leading-6 text-slate-400" data-testid={`material-description-${id}`}>{description}</p></div><div className="flex gap-2">{inputs.wall_material === id && <span className="rounded-full border border-orange-300/20 px-2 py-1 text-[10px] text-orange-200" data-testid={`material-wall-badge-${id}`}>Wall</span>}{inputs.roof_material === id && <span className="rounded-full border border-sky-300/20 px-2 py-1 text-[10px] text-sky-200" data-testid={`material-roof-badge-${id}`}>Roof</span>}</div></div>)}</div></CardContent></Card>
-  </div>;
-}
+export { default as MaterialsSection } from "@/components/MaterialsWorkspace";

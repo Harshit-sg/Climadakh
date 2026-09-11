@@ -1,0 +1,79 @@
+{
+  "passed": 10,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [],
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "Expanded material catalogue with transparent properties",
+      "name": "materials-catalogue-search-filter",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Materials tab loaded 18 materials from /api/materials; search 'AAC' filtered to 'Aerated concrete'; category filter worked; inspecting a material showed density, specific heat, description, property_basis, and a working source link."
+    },
+    {
+      "criterion": "Layered design inputs drive new heat-balance analysis",
+      "name": "layered-design-inputs-persist-and-affect-uvalue",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Selected AAC wall core + mineral-wool exterior insulation, changed wall U-value from baseline; edited ACH to 2.5 and initial temperature to 5; values persisted across Analysis->Materials tab switch; negative ACH (-5) failed HTML5 checkValidity() (min=0), confirming client-side rejection of invalid numeric input."
+    },
+    {
+      "criterion": "Dimensionally consistent and numerically conservative v2 solver (API contract)",
+      "name": "test_tscheck_thermal_v2_api.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "POST /api/analyze with AAC core + mineral-wool insulation returned 200 with model_info.version=='rc-energy-v2.0', validation_status=='uncalibrated', 3 material_snapshots (aac, insulated-panel, mineral-wool); 24-hour energy_balance ledger where gains-losses==storage_change within 1e-6 kWh for every hour and all 6 loss pathways >=0; heat_flows total reconciled with heat_loss_kwh within 5e-3. Unknown wall_material returned 422."
+    },
+    {
+      "criterion": "Dimensionally consistent and numerically conservative v2 solver (analytic suite)",
+      "name": "test_thermal_v2.py (pre-existing, re-run this iteration)",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "Full backend suite `cd /app/backend && python -m pytest -q` -> '23 passed', including the 11 analytic RC/solar-normalisation/exterior-insulation/legacy-readability cases in test_thermal_v2.py."
+    },
+    {
+      "criterion": "Engaging interactive charts",
+      "name": "analysis-run-shows-interactive-charts",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "New run showed temperature chart with comfort/inside/ambient legends, sensitivity toggle revealing its disclaimer, heat-loss donut, heat-balance hourly/cumulative chart, and hour slider moving from 'Hour 1/24' state to 'Hour 13/24' with balance-hour-storage value changing; balance-numerical-closure and its disclaimer were visible."
+    },
+    {
+      "criterion": "Preserve existing saved data (hash + Mongo)",
+      "name": "test_tscheck_data_preservation.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "Queried raw Mongo 'analyses' collection for the 14 protected ids in memory/data_preservation.json, dropped _id, canonical json.dumps(sort_keys=True, default=str) sorted by id, sha256 matched the recorded baseline hash 6058b8a7... exactly."
+    },
+    {
+      "criterion": "Preserve existing saved data (legacy UI)",
+      "name": "legacy-run-preserved-in-saved-runs",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Opened legacy id 4931b161-8cd1-4276-8b7d-3fc7dea8fc55 from Saved runs; legacy-model-notice/title/description shown; heat-balance-chart and temperature-sensitivity-toggle (v2-only ledger/sensitivity elements) had zero count confirming no fabricated data; original metrics/chart still rendered."
+    },
+    {
+      "criterion": "Save, reopen, and export new and legacy runs",
+      "name": "save-and-export-new-v2-run",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Built an AAC+mineral-wool run, saved it, exported JSON (verified model_info.version=='rc-energy-v2.0', energy_balance, sensitivity present) and CSV (contains 'hour' and ledger/storage column names) via real (non-forced) clicks after letting the save toast clear, then reopened it from Saved runs and confirmed heat-balance-chart rendered unchanged."
+    },
+    {
+      "criterion": "Responsive distinct workspace sections and regression",
+      "name": "responsive-workspace-desktop-and-mobile",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "At 1280x720 and 390x844, cycled all six tabs (Overview, Shelter geometry, Solar & climate, Materials, Analysis, Saved runs); document.documentElement scrollWidth-clientWidth <=2px on every tab at both sizes; current-weather-panel visible on mobile Overview; zero console errors reported."
+    },
+    {
+      "criterion": "Public ingress path smoke check (APP_URL)",
+      "name": "public-url-smoke-load",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Loaded https://highalt-thermal-app.preview.emergentagent.com directly, workspace navigation rendered, Materials tab loaded '18 materials' confirming the ingress proxy path to /api/materials works end-to-end."
+    }
+  ]
+}

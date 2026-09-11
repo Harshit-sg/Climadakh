@@ -4,6 +4,9 @@ from datetime import datetime, timezone
 from fastapi import APIRouter
 
 from lib.db import db
+from lib.thermal_solver import build_analysis
+from lib.materials import MATERIALS as MATERIAL_CATALOGUE
+from models.materials import MaterialDefinition
 from models.analysis import (
     AnalysisRequest,
     AnalysisResult,
@@ -16,6 +19,8 @@ from models.analysis import (
 
 router = APIRouter()
 
+# Legacy v1 implementation retained for traceability only. New requests use
+# build_analysis (v2); saved historical results are read as-is, never recalculated.
 MATERIALS = {
     "rammed-earth": {"label": "Rammed earth", "u": 0.42, "mass": 0.9},
     "stone-mud": {"label": "Stone + mud mortar", "u": 0.78, "mass": 1.0},
@@ -115,12 +120,17 @@ def _make_result(req: AnalysisRequest) -> AnalysisResult:
 
 @router.post("/analyze", response_model=AnalysisResult)
 async def analyze_shelter(request: AnalysisRequest) -> AnalysisResult:
-    return _make_result(request)
+    return build_analysis(request)
+
+
+@router.get("/materials", response_model=list[MaterialDefinition])
+async def get_materials() -> list[MaterialDefinition]:
+    return list(MATERIAL_CATALOGUE.values())
 
 
 @router.get("/analyses", response_model=list[SavedAnalysis])
 async def get_saved_analyses() -> list[SavedAnalysis]:
-    documents = await db.analyses.find().sort("created_at", -1).to_list(20)
+    documents = await db.analyses.find().sort("created_at", -1).to_list(1000)
     return [SavedAnalysis(**document) for document in documents]
 
 

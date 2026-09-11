@@ -50,6 +50,8 @@
 .workspace-enter { animation: workspace-enter 300ms ease both; }
 .blueprint-surface { background-color: #09131c; background-image: linear-gradient(rgba(56,189,248,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,.04) 1px, transparent 1px); background-size: 26px 26px; }
 @keyframes workspace-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.thermal-flow { animation: thermal-flow 2s linear infinite; }
+@keyframes thermal-flow { to { stroke-dashoffset: -34; } }
 @media (max-width: 640px) { .workspace-tab { flex-basis: 30%; padding: .65rem .4rem; font-size: .65rem; gap: .3rem; } }
 
 .control-input, .control-select {
