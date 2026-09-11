@@ -15,7 +15,7 @@ LIVE_CACHE: dict[str, WeatherResponse] = {}
 LOCATION_COORDS = {
     "Leh": (34.1526, 77.5771),
     "Kargil": (34.5539, 76.1349),
-    "Nubra Valley": (35.3000, 77.5500),
+    "Nubra Valley": (34.5512, 77.5485),  # Diskit, representative settlement in Nubra Valley
     "Pangong": (33.7595, 78.6676),
 }
 
