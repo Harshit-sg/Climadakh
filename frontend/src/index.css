@@ -4,6 +4,7 @@
 @import "@fontsource/ibm-plex-sans";
 @import "@fontsource/ibm-plex-mono";
 @import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/playfair-display";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -42,6 +43,21 @@
 
 .font-heading { font-family: "Space Grotesk Variable", sans-serif; }
 .font-mono { font-family: "IBM Plex Mono", monospace; }
+.climadakh-wordmark {
+  font-family: "Playfair Display Variable", Georgia, serif;
+  font-size: clamp(1.8rem, 3vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -.045em;
+  color: #ffecd8;
+  text-shadow: 0 2px 24px rgba(253, 186, 116, .08);
+  animation: wordmark-reveal 650ms ease-out both;
+  transition: color 200ms ease, text-shadow 200ms ease;
+}
+.climadakh-brand:hover .climadakh-wordmark { color: #fff7ed; text-shadow: 0 2px 26px rgba(253, 186, 116, .18); }
+.climadakh-brand-line { width: 22px; height: 1px; background: #d9a777; transition: width 250ms ease; }
+.climadakh-brand:hover .climadakh-brand-line { width: 34px; }
+@keyframes wordmark-reveal { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 
 .workspace-card { border-color: rgba(255,255,255,.1); background: rgba(11,17,24,.9); backdrop-filter: blur(18px); box-shadow: 0 18px 65px rgba(0,0,0,.18); }
 .workspace-tab { position: relative; min-height: 46px; flex: 1 0 auto; justify-content: center; gap: .55rem; border-radius: .7rem; padding: .7rem 1rem; font-size: .75rem; color: #94a3b8; transition: background-color 180ms ease, color 180ms ease, transform 180ms ease; }

@@ -1,7 +1,13 @@
-# Thermal Atlas — Living Spec
+# Climadakh — Living Spec
 
 ## What it does
-Thermal Atlas is a self-contained engineering dashboard for comparing passive shelter designs across Ladakh climate profiles. Users choose a location, enter geometry/material/opening inputs, run a deterministic thermal model, inspect temperature and heat-flow charts, compare material scenarios, and save/revisit completed analyses.
+Climadakh (formerly Thermal Atlas) is a self-contained engineering dashboard for comparing passive shelter designs across Ladakh climate profiles. Users choose a location, enter geometry/material/opening inputs, run a deterministic thermal model, inspect temperature and heat-flow charts, compare material scenarios, and save/revisit completed analyses.
+
+## Brand
+- Public name: **Climadakh**. The header uses a warm-ivory Playfair Display Variable wordmark, with the tagline “Climate · Shelter · Ladakh” and restrained reveal/hover motion. Existing scientific UI typography remains unchanged.
+- The wordmark has the exact credit “by team vijay” immediately beside it, baseline-aligned in smaller IBM Plex Sans text (10px mobile / 11px desktop).
+- User will provide the logo later; no custom logo has been generated. Header currently uses the wordmark alone. Site metadata, section branding, accessibility label, API greeting, and new Claude review prompts use Climadakh.
+- Saved analyses/review history are not rewritten. Machine-readable `thermal-atlas-ansys-handoff-v1/v2` identifiers and internal session prefixes remain for compatibility. Public preview URL stays https://highalt-thermal-app.preview.emergentagent.com.
 
 ## Data model
 - `AnalysisRequest`: location, ambient day/night temperatures, solar irradiance, sunshine hours, dimensions, orientation, opening area, wall/roof materials, thermal mass, and simulation duration.

@@ -29,7 +29,7 @@ Keep the full response under 500 words and lead with the most important decision
 
 User question: {payload.question or "No additional question. Make the response useful on its own."}
 
-Thermal Atlas analysis JSON:
+Climadakh analysis JSON:
 {payload.analysis.model_dump_json(indent=2)}
 """
 
@@ -48,7 +48,7 @@ async def stream_ai_review(payload: AiReviewRequest) -> StreamingResponse:
                 LlmChat(
                     api_key=api_key,
                     session_id=f"thermal-atlas-review-{review_id}",
-                    system_message="You are Claude, an engineering design-review assistant inside Thermal Atlas. Be precise, constructive, and concise.",
+                    system_message="You are Claude, an engineering design-review assistant inside Climadakh. Be precise, constructive, and concise.",
                 )
                 .with_model("anthropic", "claude-sonnet-4-6")
                 .with_params(max_tokens=900)

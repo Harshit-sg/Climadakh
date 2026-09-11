@@ -287,9 +287,9 @@ export default function Home() {
 
       <header className="relative z-10 border-b border-white/10 bg-[#080b10]/80 backdrop-blur-2xl" data-testid="app-header">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-5 py-4 lg:px-8">
-          <div className="flex items-center gap-3" data-testid="brand-lockup">
-            <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-orange-300/30 bg-orange-400/10 text-orange-300"><Mountain size={20} /><span className="absolute bottom-1 h-px w-6 bg-orange-300/60" /></div>
-            <div><p className="font-heading text-sm font-semibold tracking-tight text-slate-100" data-testid="brand-name">THERMAL ATLAS</p><p className="font-mono text-[9px] uppercase tracking-[0.22em] text-slate-500" data-testid="brand-subtitle">Ladakh shelter lab / v1.0</p></div>
+          <div className="climadakh-brand flex items-center gap-3" data-testid="brand-lockup">
+            {/* Wordmark only; the user's supplied logo will be added later. */}
+            <div><div className="flex items-baseline gap-2.5"><p className="climadakh-wordmark" data-testid="brand-name">Climadakh</p><span className="whitespace-nowrap font-sans text-[10px] font-normal tracking-normal text-slate-400 sm:text-[11px]" data-testid="brand-team-credit">by team vijay</span></div><div className="mt-2 flex items-center gap-2"><span className="climadakh-brand-line" aria-hidden="true" /><p className="font-mono text-[8px] uppercase tracking-[0.2em] text-slate-400 sm:text-[9px]" data-testid="brand-subtitle">Climate · Shelter · Ladakh</p></div></div>
           </div>
           <div className="hidden items-center gap-5 md:flex" data-testid="header-status">
             <div className="flex items-center gap-2 text-[11px] text-slate-400"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> model engine online</div>
@@ -304,7 +304,7 @@ export default function Home() {
 
       <main className="relative z-10 mx-auto min-h-[calc(100vh-140px)] max-w-[1600px] px-5 pb-12 pt-5 lg:px-8">
         <Tabs value={activeTab.id} onValueChange={value => navigateTab(String(value))} className="gap-0">
-          <TabsList className="mb-6 flex h-auto w-full flex-wrap justify-start gap-1 rounded-2xl border border-white/10 bg-[#0b1119]/95 p-1.5" aria-label="Thermal Atlas workspace sections" data-testid="workspace-navigation">
+          <TabsList className="mb-6 flex h-auto w-full flex-wrap justify-start gap-1 rounded-2xl border border-white/10 bg-[#0b1119]/95 p-1.5" aria-label="Climadakh workspace sections" data-testid="workspace-navigation">
             {WORKSPACE_TABS.map(tab => <TabsTrigger key={tab.id} value={tab.id} className="workspace-tab" data-active={activeTab.id === tab.id ? "" : undefined} data-testid={`workspace-tab-${tab.id}`}><tab.icon size={15} /><span data-testid={`workspace-tab-label-${tab.id}`}>{tab.label}</span></TabsTrigger>)}
           </TabsList>
           <div className="mb-7 flex flex-col justify-between gap-4 rounded-xl border border-white/10 bg-[#0b1118]/70 px-4 py-3 lg:flex-row lg:items-center" data-testid="workspace-context-bar">
@@ -312,7 +312,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center gap-5"><div className="min-w-[150px]"><label htmlFor="run-duration" className="mb-2 flex justify-between gap-4 text-[10px] text-slate-400" data-testid="duration-label">Simulation window <span className="font-mono text-sky-200" data-testid="duration-value">{inputs.duration_hours} h</span></label><input id="run-duration" type="range" min="6" max="168" step="6" value={inputs.duration_hours} onChange={event => updateInput("duration_hours", Number(event.target.value))} className="control-range" data-testid="duration-slider" /></div><span className={`rounded-full border px-3 py-1.5 text-[10px] ${result && !resultOutdated ? "border-emerald-300/20 text-emerald-200" : "border-orange-300/20 text-orange-200"}`} data-testid="workspace-design-status">{analyzeMutation.isPending ? "Model running…" : result ? resultOutdated ? "Draft changed · rerun needed" : "Results match this design" : "Draft design · ready to configure"}</span></div>
           </div>
           {!validInputs && <p role="alert" className="mb-5 rounded-xl border border-rose-300/20 bg-rose-400/10 p-3 text-sm text-rose-200" data-testid="workspace-validation-error">Check Geometry, Solar, and Materials limits. Openings cannot exceed wall area; temperatures must be −80 to 60 °C with day ≥ night. Positive dimensions, irradiation, thicknesses and U-values are required.</p>}
-          <div key={activeTab.id} className="workspace-enter mb-7" data-testid="workspace-section-heading"><p className="mb-3 font-mono text-[10px] uppercase tracking-[.2em] text-orange-300" data-testid="workspace-section-eyebrow">Thermal Atlas / {activeTab.label}</p><h1 className="font-heading text-3xl font-medium tracking-[-.04em] text-slate-50 sm:text-4xl" data-testid="page-title">{activeTab.title}</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400" data-testid="page-description">{activeTab.description}</p></div>
+          <div key={activeTab.id} className="workspace-enter mb-7" data-testid="workspace-section-heading"><p className="mb-3 font-mono text-[10px] uppercase tracking-[.2em] text-orange-300" data-testid="workspace-section-eyebrow">Climadakh / {activeTab.label}</p><h1 className="font-heading text-3xl font-medium tracking-[-.04em] text-slate-50 sm:text-4xl" data-testid="page-title">{activeTab.title}</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400" data-testid="page-description">{activeTab.description}</p></div>
 
           <TabsContent value="overview" className="workspace-enter mt-0" data-testid="workspace-panel-overview">
             <CurrentWeather location={inputs.location} />

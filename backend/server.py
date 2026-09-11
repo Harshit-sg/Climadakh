@@ -37,7 +37,7 @@ api_router = APIRouter(prefix="/api")
 
 @api_router.get("/")
 async def root():
-    return {"message": "Thermal Atlas API online"}
+    return {"message": "Climadakh API online"}
 
 
 api_router.include_router(analysis_router)
