@@ -20,3 +20,4 @@ No authentication; this is a single-user research/demo workspace.
 - Optional live and historical weather use Open-Meteo's public forecast/archive endpoints (no API key in the non-commercial public tier), with graceful UI fallback when unavailable.
 - CSV import accepts measured rows with `timestamp`/`datetime`/`time`, `temperature`/`temp`, and optional `solar_radiation`/`solar_irradiance` columns.
 - ANSYS handoff exports the current analysis as a thermal time-series CSV and a JSON parameter package; these are browser downloads and do not require an external service.
+- Claude Sonnet 4.6 is integrated through the Emergent-managed Anthropic path. A streamed `/api/ai/review` route supports design review, result explanation, and study-note modes. Completed responses are stored in `ai_reviews`; Claude is explicitly framed as an engineering assistant, not a certified design authority or ANSYS replacement.

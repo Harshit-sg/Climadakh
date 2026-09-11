@@ -48,6 +48,33 @@ export const apiPostForm = async <T>(path: string, form: FormData): Promise<T> =
   }
   return (await res.json()) as T;
 };
+
+export const apiPostStream = async <T>(path: string, body: JsonBody, onEvent: (event: T) => void): Promise<void> => {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => null);
+    throw new ApiError(res.status, errBody);
+  }
+  if (!res.body) throw new Error("stream unavailable");
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const chunk = await reader.read();
+    buffer += decoder.decode(chunk.value ?? new Uint8Array(), { stream: !chunk.done });
+    const blocks = buffer.split("\n\n");
+    buffer = blocks.pop() ?? "";
+    for (const block of blocks) {
+      const dataLine = block.split("\n").find((line) => line.startsWith("data: "));
+      if (dataLine) onEvent(JSON.parse(dataLine.slice(6)) as T);
+    }
+    if (chunk.done) break;
+  }
+};
 export const apiPut = <T>(path: string, body?: JsonBody) => request<T>("PUT", path, body ?? null);
 export const apiPatch = <T>(path: string, body?: JsonBody) =>
   request<T>("PATCH", path, body ?? null);

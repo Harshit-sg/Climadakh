@@ -1,0 +1,64 @@
+{
+  "passed": 7,
+  "failed": 0,
+  "bugs": [],
+  "action_items": [
+    {
+      "type": "coverage_gap",
+      "severity": "low",
+      "note": "Criterion 'dashboard retains simulation results and shows a clear AI-only error if Claude cannot complete a review' could not be actively triggered end-to-end: Claude completed successfully on every real run, and there is no supported way to force a provider failure without mocking application code (out of scope for this agent). The error-path UI (aiError banner, results retained) was code-reviewed in frontend/src/pages/Home.tsx (aiMutation.onError / stream 'error' event handling) and looks correct, but is unverified by a live failure. Recommend a light backend fault-injection hook if this path needs hard proof."
+    }
+  ],
+  "retest_needed": false,
+  "checks": [
+    {
+      "criterion": "The existing Thermal Atlas analysis flow remains functional",
+      "name": "thermal-flow-produces-results",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Run thermal analysis revealed metric cards, temperature chart, heat-flow card, scenario comparison table, and recommendation title with no regression from the empty state."
+    },
+    {
+      "criterion": "Claude design review is available after an analysis",
+      "name": "ai-review-card-ready-after-analysis",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "After results appeared, ai-review-card showed 'Claude Sonnet 4.6' badge, the optional question textarea, all three focus buttons, and an enabled generate-ai-review-button."
+    },
+    {
+      "criterion": "All three Claude modes can be selected",
+      "name": "ai-focus-modes-toggle-active",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Clicking explain, report, and back to review each toggled focus-button-active onto exactly the clicked control and off the previous one."
+    },
+    {
+      "criterion": "Claude responses stream into the UI and complete; Claude receives the exact analysis context",
+      "name": "ai-review-streams-and-completes",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Selected 'Explain results', asked a question, clicked Generate: streamed partial text appeared before completion, ai-review-complete ('stream saved · <id>') appeared within ~20s, final response cited the model's exact wall-loss value (3.4 kWh / 29% of 11.6 kWh total, matching the 'Insulated composite envelope' run), no ai-review-error panel, and zero browser console errors."
+    },
+    {
+      "criterion": "Claude API validation and graceful failure contract are safe (validation half)",
+      "name": "test_tscheck_ai_review_validation.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "HTTP POST /api/ai/review returned 422 for a missing analysis field, an invalid focus literal, and a question exceeding the 1200-char max_length."
+    },
+    {
+      "criterion": "Completed Claude reviews persist; Claude receives the exact analysis context",
+      "name": "test_tscheck_ai_review_history.py",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "POST /api/analyze -> POST /api/ai/review (SSE) streamed delta events with non-empty content and a done event with a review_id; GET /api/ai/history then returned that id with non-empty response, focus='review', recommendation matching the analysis, a created_at timestamp, and model='claude-sonnet-4-6'."
+    },
+    {
+      "criterion": "The existing Thermal Atlas analysis flow remains functional (backend contract)",
+      "name": "test_tscheck_thermal_analysis.py / test_tscheck_saved_analysis.py / test_tscheck_api_contract.py (pre-existing, re-run this iteration)",
+      "lane": "backend",
+      "status": "passed",
+      "evidence": "Full backend suite (12 tests across pre-existing + new AI files) passed: `cd /app/backend && python -m pytest -q` -> '12 passed'."
+    }
+  ]
+}

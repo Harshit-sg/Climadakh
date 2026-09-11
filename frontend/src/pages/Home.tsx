@@ -14,20 +14,23 @@ import {
   Database,
   FileJson,
   FileSpreadsheet,
+  FileText,
   Gauge,
   Mountain,
+  MessageSquareText,
   Play,
   RefreshCw,
   Radio,
   Save,
   Snowflake,
+  Sparkles,
   Sun,
   Thermometer,
   Upload,
   Wind,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { apiGet, apiPost, apiPostForm } from "@/lib/api";
+import { apiGet, apiPost, apiPostForm, apiPostStream } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -147,6 +150,24 @@ interface WeatherResponse {
   points: WeatherPoint[];
 }
 
+type AiFocus = "review" | "explain" | "report";
+
+interface AiStreamEvent {
+  type: "delta" | "done" | "error";
+  content?: string;
+  review_id?: string;
+  message?: string;
+}
+
+interface AiHistoryItem {
+  id: string;
+  created_at: string;
+  focus: AiFocus;
+  recommendation: string;
+  response: string;
+  model: string;
+}
+
 const LOCATION_PRESETS: Record<string, LocationPreset> = {
   Leh: { label: "Leh", altitude: "3,500 m", day: 6, night: -14, solar: 5.8, sunshine: 7.9, descriptor: "Cold desert / clear winter sky" },
   Kargil: { label: "Kargil", altitude: "2,676 m", day: 8, night: -9, solar: 5.4, sunshine: 7.3, descriptor: "Sheltered valley / strong diurnal swing" },
@@ -220,9 +241,15 @@ export default function Home() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [saveName, setSaveName] = useState("Leh winter baseline");
   const [weatherOverride, setWeatherOverride] = useState<WeatherResponse | null>(null);
+  const [aiFocus, setAiFocus] = useState<AiFocus>("review");
+  const [aiQuestion, setAiQuestion] = useState("");
+  const [aiResponse, setAiResponse] = useState("");
+  const [aiError, setAiError] = useState("");
+  const [aiReviewId, setAiReviewId] = useState("");
 
   const savedQuery = useQuery({ queryKey: ["analyses"], queryFn: () => apiGet<SavedAnalysis[]>("/analyses"), retry: false });
   const weatherQuery = useQuery({ queryKey: ["weather", inputs.location], queryFn: () => apiGet<WeatherResponse>(`/weather/live?location=${encodeURIComponent(inputs.location)}`), refetchInterval: 900000, retry: false });
+  const aiHistoryQuery = useQuery({ queryKey: ["ai-history"], queryFn: () => apiGet<AiHistoryItem[]>("/ai/history"), retry: false });
   const analyzeMutation = useMutation({
     mutationFn: (payload: AnalysisRequest) => apiPost<AnalysisResult>("/analyze", payload),
     onSuccess: (data) => { setResult(data); toast.success("Simulation complete", { description: "Thermal response updated for the current shelter inputs." }); },
@@ -251,6 +278,22 @@ export default function Home() {
     mutationFn: () => apiGet<WeatherResponse>(`/weather/sample?location=${encodeURIComponent(inputs.location)}`),
     onSuccess: (data) => { downloadText(`${inputs.location.toLowerCase().replaceAll(" ", "-")}-weather-sample.csv`, weatherCsv(data), "text/csv;charset=utf-8"); toast.success("Historical sample downloaded"); },
     onError: () => toast.error("Historical sample unavailable", { description: "The public climate archive could not be reached." }),
+  });
+  const aiMutation = useMutation({
+    mutationFn: async (payload: { analysis: AnalysisResult; focus: AiFocus; question: string }) => {
+      setAiResponse("");
+      setAiError("");
+      setAiReviewId("");
+      let streamFailed = false;
+      await apiPostStream<AiStreamEvent>("/ai/review", payload, (event) => {
+        if (event.type === "delta") setAiResponse((current) => current + (event.content ?? ""));
+        if (event.type === "done") setAiReviewId(event.review_id ?? "");
+        if (event.type === "error") { streamFailed = true; setAiError(event.message ?? "Claude could not complete the review."); }
+      });
+      if (streamFailed) throw new Error("Claude stream failed");
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["ai-history"] }); toast.success("Claude review ready"); },
+    onError: () => { setAiError("Claude is unavailable right now. Your simulation results are still valid."); toast.error("Claude review unavailable"); },
   });
 
   const location = LOCATION_PRESETS[inputs.location];
@@ -338,6 +381,7 @@ export default function Home() {
                 <Card className="border-white/10 bg-[#0b1016]/85 shadow-[0_25px_80px_rgba(0,0,0,.22)] backdrop-blur-xl" data-testid="heat-flow-card"><CardHeader><CardDescription className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500" data-testid="heat-flow-eyebrow">loss pathways / kWh</CardDescription><CardTitle className="mt-2 font-heading text-xl font-medium" data-testid="heat-flow-title">Heat flow analysis</CardTitle></CardHeader><CardContent><div className="space-y-5">{result.heat_flows.map((flow) => <div key={flow.name} data-testid={`heat-flow-row-${flow.name.toLowerCase().replaceAll(" ", "-")}`}><div className="mb-2 flex justify-between text-xs"><span className="text-slate-400">{flow.name}</span><span className="font-mono text-slate-200">{flow.value.toFixed(1)}</span></div><div className="h-2 overflow-hidden rounded-full bg-white/[.06]"><motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, (flow.value / Math.max(result.heat_loss_kwh, 1)) * 100)}%` }} transition={{ duration: .8, delay: .15 }} className="h-full rounded-full" style={{ backgroundColor: flow.color }} /></div></div>)}</div><div className="mt-8 rounded-xl border border-rose-300/15 bg-rose-400/[.06] p-3"><div className="flex gap-2"><Activity size={15} className="mt-0.5 shrink-0 text-rose-300" /><p className="text-xs leading-5 text-slate-400" data-testid="heat-flow-insight">Openings account for <span className="font-mono text-rose-200">{Math.round((result.heat_flows[1]?.value / Math.max(result.heat_loss_kwh, 1)) * 100)}%</span> of modeled loss. Consider an insulated vestibule or reduced glazing on the windward face.</p></div></div></CardContent></Card></div>
               <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(300px,.8fr)]"><Card className="border-white/10 bg-[#0b1016]/85 backdrop-blur-xl" data-testid="scenario-comparison-card"><CardHeader className="flex-row items-start justify-between"><div><CardDescription className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500" data-testid="scenario-eyebrow">same sky / alternate envelope</CardDescription><CardTitle className="mt-2 font-heading text-xl font-medium" data-testid="scenario-title">Material scenarios</CardTitle></div><span className="rounded-full border border-white/10 px-2 py-1 font-mono text-[9px] text-slate-500" data-testid="scenario-count">{result.scenarios.length} cases</span></CardHeader><CardContent><div className="overflow-x-auto"><table className="w-full min-w-[520px] text-left text-xs"><thead><tr className="border-b border-white/10 text-[10px] uppercase tracking-[.12em] text-slate-600"><th className="pb-3 font-medium" data-testid="scenario-column-material">assembly</th><th className="pb-3 font-medium" data-testid="scenario-column-temp">end temp</th><th className="pb-3 font-medium" data-testid="scenario-column-loss">loss</th><th className="pb-3 text-right font-medium" data-testid="scenario-column-score">fit score</th></tr></thead><tbody>{result.scenarios.map((scenario, index) => <tr key={scenario.name} className="border-b border-white/[.06] last:border-0"><td className="py-4"><div className="flex items-center gap-2"><span className={`h-1.5 w-1.5 rounded-full ${index === 0 ? "bg-orange-300" : "bg-slate-600"}`} /><span className="text-slate-300">{scenario.name}</span></div><p className="mt-1 pl-3.5 text-[10px] text-slate-600">{scenario.note}</p></td><td className="py-4 font-mono text-orange-200">{scenario.inside_temp.toFixed(1)}°C</td><td className="py-4 font-mono text-slate-400">{scenario.heat_loss.toFixed(1)} kWh</td><td className="py-4 text-right"><span className={`rounded-full px-2 py-1 font-mono text-[10px] ${index === 0 ? "bg-orange-400/15 text-orange-200" : "bg-white/[.06] text-slate-400"}`}>{scenario.score}/100</span></td></tr>)}</tbody></table></div></CardContent></Card>
                 <Card className="relative overflow-hidden border-orange-300/25 bg-[#17100d]/90 backdrop-blur-xl" data-testid="recommendation-card"><div className="pointer-events-none absolute right-[-45px] top-[-45px] h-36 w-36 rounded-full border border-orange-300/15" /><div className="pointer-events-none absolute right-[-25px] top-[-25px] h-24 w-24 rounded-full border border-orange-300/10" /><CardHeader><div className="mb-2 flex items-center gap-2 text-orange-300"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-400/15"><Gauge size={16} /></span><span className="font-mono text-[10px] uppercase tracking-[.15em]" data-testid="recommendation-label">atlas recommendation</span></div><CardTitle className="mt-2 max-w-xs font-heading text-2xl font-medium leading-tight" data-testid="recommendation-title">{result.recommendation}</CardTitle></CardHeader><CardContent><p className="text-sm leading-6 text-slate-400" data-testid="recommendation-detail">{result.recommendation_detail}</p><div className="mt-6 flex items-center justify-between border-t border-orange-300/15 pt-4"><span className="text-[10px] uppercase tracking-[.14em] text-slate-500" data-testid="efficiency-score-label">efficiency score</span><span className="font-mono text-2xl text-orange-200" data-testid="efficiency-score">{result.efficiency_score}<span className="text-sm text-orange-300/50"> / 100</span></span></div></CardContent></Card></div>
+              <Card className="mt-5 overflow-hidden border-sky-300/20 bg-[#0b1118]/90 backdrop-blur-xl" data-testid="ai-review-card"><CardHeader className="flex-row items-start justify-between border-b border-white/10 pb-4"><div><div className="mb-2 flex items-center gap-2 text-sky-200"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-400/15"><Sparkles size={16} /></span><span className="font-mono text-[10px] uppercase tracking-[.15em]" data-testid="ai-review-eyebrow">claude design review</span></div><CardTitle className="font-heading text-xl font-medium" data-testid="ai-review-title">Turn the model into a next move.</CardTitle><CardDescription className="mt-2 max-w-2xl text-xs leading-5 text-slate-500" data-testid="ai-review-description">Claude reads this exact thermal run and responds as an engineering assistant — useful for decisions, never a substitute for ANSYS validation.</CardDescription></div><Badge variant="outline" className="border-sky-300/20 bg-sky-400/[.06] text-sky-200" data-testid="ai-model-badge">Claude Sonnet 4.6</Badge></CardHeader><CardContent className="pt-5"><div className="flex flex-wrap gap-2" data-testid="ai-focus-controls">{([['review', 'Design review', MessageSquareText], ['explain', 'Explain results', Sparkles], ['report', 'Study note', FileText]] as const).map(([focus, label, Icon]) => <button key={focus} type="button" onClick={() => setAiFocus(focus)} className={`focus-button ${aiFocus === focus ? "focus-button-active" : ""}`} data-testid={`ai-focus-${focus}-button`}><Icon size={13} className="mr-1.5" />{label}</button>)}</div><textarea value={aiQuestion} onChange={(event) => setAiQuestion(event.target.value)} placeholder="Ask Claude something specific about this shelter run (optional)…" className="control-input mt-4 min-h-[70px] resize-y py-3" data-testid="ai-question-input" /><div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center"><Button onClick={() => result && aiMutation.mutate({ analysis: result, focus: aiFocus, question: aiQuestion })} disabled={aiMutation.isPending || !result} className="bg-sky-500 text-white shadow-[0_10px_30px_rgba(14,165,233,.18)] hover:bg-sky-400" data-testid="generate-ai-review-button"><Sparkles size={14} className="mr-2" />{aiMutation.isPending ? "Claude is reading the run…" : "Generate Claude review"}</Button>{aiReviewId && <span className="font-mono text-[10px] text-emerald-300" data-testid="ai-review-complete">stream saved · {aiReviewId.slice(0, 8)}</span>}</div>{aiError && <div className="mt-4 rounded-xl border border-rose-300/15 bg-rose-400/[.06] p-3 text-xs leading-5 text-rose-200" data-testid="ai-review-error">{aiError}</div>}{aiResponse && <div className="mt-5 rounded-xl border border-sky-300/15 bg-sky-400/[.04] p-4" data-testid="ai-response-panel"><div className="mb-3 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.14em] text-sky-200" data-testid="ai-response-label"><Sparkles size={12} /> Claude response</div><div className="whitespace-pre-wrap text-sm leading-7 text-slate-300" data-testid="ai-response-text">{aiResponse}</div></div>}{!aiResponse && !aiMutation.isPending && !aiError && <p className="mt-4 text-xs text-slate-600" data-testid="ai-empty-state">Choose a lens and generate a streamed review from this run.</p>}{aiHistoryQuery.data && aiHistoryQuery.data.length > 0 && <div className="mt-5 border-t border-white/10 pt-4"><p className="mb-3 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.14em] text-slate-500" data-testid="ai-history-title"><MessageSquareText size={12} /> previous Claude reviews</p><div className="grid gap-2 md:grid-cols-2">{aiHistoryQuery.data.slice(0, 4).map((item) => <div key={item.id} className="rounded-lg border border-white/[.06] bg-white/[.025] p-3" data-testid={`ai-history-item-${item.id}`}><div className="flex items-center justify-between gap-2"><span className="text-xs capitalize text-slate-300">{item.focus}</span><span className="font-mono text-[9px] text-slate-600">{formatDate(item.created_at)}</span></div><p className="mt-2 line-clamp-2 text-[11px] leading-5 text-slate-500">{item.response}</p></div>)}</div></div>}</CardContent></Card>
               <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#0b1016]/75 p-4 backdrop-blur-xl sm:flex-row sm:items-center" data-testid="save-analysis-bar"><div className="flex flex-1 items-center gap-3"><div className="hidden rounded-xl border border-sky-300/20 bg-sky-400/10 p-2 text-sky-300 sm:block"><Save size={16} /></div><div className="min-w-0 flex-1"><p className="text-xs font-semibold text-slate-300" data-testid="save-analysis-title">Keep this thermal run</p><p className="mt-1 text-[11px] text-slate-500" data-testid="save-analysis-description">Save the current inputs and results for your design log.</p></div><input value={saveName} onChange={(event) => setSaveName(event.target.value)} className="control-input max-w-[190px]" aria-label="Analysis name" data-testid="analysis-name-input" /></div><Button variant="outline" disabled={saveMutation.isPending || !saveName.trim()} onClick={() => result && saveMutation.mutate({ name: saveName.trim(), result })} className="border-sky-300/25 bg-sky-400/10 text-sky-200 hover:bg-sky-400/20" data-testid="save-analysis-button"><Bookmark size={14} className="mr-2" /> {saveMutation.isPending ? "Saving…" : "Save analysis"}</Button><Button variant="ghost" className="text-slate-500 hover:text-slate-200" onClick={exportCsv} data-testid="export-csv-button"><FileSpreadsheet size={14} className="mr-2" /> CSV for ANSYS</Button><Button variant="ghost" className="text-slate-500 hover:text-slate-200" onClick={exportJson} data-testid="export-json-button"><FileJson size={14} className="mr-2" /> JSON parameters</Button></div>
             </>}
           </section>
