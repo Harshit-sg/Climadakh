@@ -9,9 +9,16 @@ Thermal Atlas is a self-contained engineering dashboard for comparing passive sh
 - `SavedAnalysis`: named result persisted in MongoDB.
 
 ## Key flows
-1. Choose a Ladakh preset or edit simulation controls.
-2. Run analysis and review the animated dashboard charts and recommendation.
-3. Save the current run and revisit it from Recent runs.
+1. Use the wide site-level workspace tabs: Overview, Shelter geometry, Solar & climate, Materials, Analysis, Saved runs. The selected section is deep-linkable through `?tab=geometry` etc.; browser back/forward works without replacing shared in-memory draft state.
+2. Choose a Ladakh preset and simulation duration from the shared context bar. Geometry provides dimensions/openings, an animated proportional isometric preview, and live footprint/volume/wall-area readouts. Solar provides orientation with an animated compass, daily irradiation, sunshine duration, day/night ambient inputs, weather series tools, and current OpenWeatherMap conditions. Materials provides wall/roof choices and thermal mass with a descriptive guide.
+3. Inputs stay intact while switching tabs. Geometry → Solar → Materials → Analysis next buttons and Overview shortcuts provide additional navigation. All tabs are keyboard-accessible and wrap on narrow screens. The old narrow all-in-one sidebar is removed; each section uses the workspace width.
+4. Run analysis from the persistent header or Analysis tab and review the existing charts, scenarios, recommendation, Claude review, and ANSYS downloads. Input edits mark existing results as outdated until rerun. Exports keep the completed result’s location rather than the edited draft location.
+5. Save the completed run and open it from the dedicated Saved runs fieldbook; opening restores all inputs/results and navigates to Analysis. Navigation does not persist an unsaved draft across a full browser reload; saved runs remain in MongoDB.
+
+## UI update boundaries
+- No thermal solver or API contract changes in the workspace-tab update. Shared TS AnalysisRequest/ShelterDimensions moved to `frontend/src/lib/thermal-types.ts`, still mirroring backend models.
+- Geometry remains rectangular; the preview is illustrative and does not draw individual openings. Solar compass shows selected orientation, not real-time astronomical sun position. Humidity and wind remain contextual.
+- Geometry/solar limits follow existing API limits; the run buttons disable while numeric inputs are invalid. Existing analyses remain accessible. No new integrations or authentication.
 
 ## Auth
 No authentication; this is a single-user research/demo workspace.
